@@ -1,18 +1,23 @@
-Table contracts {
+Enum job_type {
+  freelancer
+  employee
+}
+
+Table work_histories {
   id bigint [pk]
-  selection_id bigint [ref: > selections.id]
-  agent_company_id bigint
-  type char(2) [note: '業務委託新規、業務委託更新']
-  status char(2) [note: '契約オファー、契約確認待ち、契約完了など']
-  contract_start date
-  contract_end date
-  reward int
-  settlement_range_before int
-  settlement_range_after int
-  contract_user_url string
-  contract_company_url string
-  work_location string
-  company_reason_declining tinyint
-  engineer_reason_declining tinyint
-  payment_site int
+  user_id bigint [not null, ref: > users.id]
+  seq int [not null]
+  project_name string [not null]
+  start_date date [not null]
+  role int [not null]
+  team_size char(3) [not null]
+  responsible_process json
+  project_detail text
+}
+
+Table skills {
+  id bigint [pk]
+  user_id bigint [ref: > users.id]
+  seq bigint [not null]
+  m_skill_id bigint [ref: > m_skills.id]
 }
