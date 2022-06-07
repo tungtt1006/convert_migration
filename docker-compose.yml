@@ -1,69 +1,14 @@
 version: "3.8"
 
 services:
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
-      - ./app:/app
-
   php:
-    image: php:8.1.5-fpm-alpine3.15
+    build:
+      context: "."
+      dockerfile: ./docker/Dockerfile
     volumes:
-      - ./app:/app
-
-    # api:
-    #     tty: true
-    #     stdin_open: true
-    #     build:
-    #         context: "."
-    #         dockerfile: ./docker/Dockerfile
-    #         target: base
-    #     command: /scripts/entrypoint.sh
-    #     volumes:
-    #         - .:/var/www/html
-    #         - ./docker/scripts:/scripts
-    #     depends_on:
-    #         - mysql
-    #     ports:
-    #         - "8000:8000"
-
-    # mysql:
-    #     image: mysql:5.7
-    #     environment:
-    #         MYSQL_ROOT_PASSWORD: root
-    #         MYSQL_USER: dbuser
-    #         MYSQL_PASSWORD: dbpass
-    #         MYSQL_DATABASE: catalyst_base
-    #     volumes:
-    #         - mysql:/var/lib/mysql
-    #     healthcheck:
-    #         test: [ "CMD", "mysqladmin", "ping", "-proot" ]
-    #         interval: 1m30s
-    #         timeout: 10s
-    #         retries: 3
-    #         start_period: 10s
-
-    # phpmyadmin:
-    #     image: phpmyadmin/phpmyadmin
-    #     ports:
-    #         - 8081:80
-    #     environment:
-    #         PMA_HOST: mysql
-    #         PMA_USER: root
-    #         PMA_PASSWORD: root
-
-    # mailhog:
-    #     image: mailhog/mailhog
-    #     ports:
-    #         - "8025:8025"
-    #     volumes:
-    #         - mailhog:/tmp/mail
-    #     environment:
-    #         MH_STORAGE: maildir
-    #         MH_MAILDIR_PATH: /tmp/mail
+      - .:/app
+    ports:
+      - "8000:8000"
 
 volumes:
     mysql:
