@@ -12,4 +12,4 @@
 
 namespace Composer;
 
-include __DIR__ . '/..'.'/tung/export-migration/public/index.php';
+require 'vendor/tung/export-migration/public/index.php';

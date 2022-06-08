@@ -5,6 +5,6 @@
     "homepage": "https://github.com/tungtt1006/convert_migration",
     "keywords": ["cli","command-line", "demo"],
     "bin": [
-      "tung/public/index.php"
+      "bin/phptung"
     ]
 }
