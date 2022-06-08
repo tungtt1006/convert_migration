@@ -1,15 +1,15 @@
-version: "3.8"
+# version: "3.8"
 
-services:
-  php:
-    build:
-      context: "."
-      dockerfile: ./docker/Dockerfile
-    volumes:
-      - .:/app
-    ports:
-      - "8000:8000"
+# services:
+#   php:
+#     build:
+#       context: "."
+#       dockerfile: ./docker/Dockerfile
+#     volumes:
+#       - .:/app
+#     ports:
+#       - "8000:8000"
 
-volumes:
-    mysql:
-    mailhog:
+# volumes:
+#     mysql:
+#     mailhog:

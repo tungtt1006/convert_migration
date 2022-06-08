@@ -1,0 +1,10 @@
+{
+    "name": "tung/export-migration",
+    "description": "Tool for fun",
+    "license": "MIT",
+    "homepage": "https://github.com/tungtt1006/convert_migration",
+    "keywords": ["cli","command-line", "demo"],
+    "bin": [
+      "bin/phptung"
+    ]
+}
