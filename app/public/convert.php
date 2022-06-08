@@ -2,7 +2,8 @@
 
 class Convert
 {
-    private $convertedEnum = [];
+    private $convertedEnums = [];
+    private $convertedTables = [];
 
     public function __construct($tables, private $enumTable = [], private $tableTable = [])
     {
@@ -10,12 +11,16 @@ class Convert
             $type = $this->getTypeTable($table[0]);
             if ($type === 'enum') {
                 $this->enumTable[] = $table;
-            }
-            if ($type === 'table') {
+            } elseif ($type === 'table') {
                 $this->tableTable[] = $table;
             }
         }
         $this->handleExport();
+    }
+
+    public function getTable()
+    {
+        return $this->convertedTables;
     }
 
     private function getTypeTable($firstLine)
@@ -38,38 +43,53 @@ class Convert
         }
     }
 
-    private function convertEnum()
+    private function convertEnum($enum)
     {
-        
+        $enumName = str_replace(" {", "", str_replace("Enum ", "", $enum[0]));
+        $enumValue = '';
+        for ($i = 1; $i < count($enum) - 1; $i++) {
+            if ($i == 1) {
+                $enumValue .= '"' . $enum[$i] . '"';
+            } else {
+                $enumValue .= ', "' . $enum[$i] . '"';
+            }
+        }
+        $this->convertedEnums[$enumName] = '->enum("' . $enumName . '", [' . $enumValue . '])';
     }
 
     private function convertTable($array)
     {
-        echo $this->convertTableName($array[0]) . "<br>";
+        $tableStr = '';
+        $result = $this->convertTableName($array[0]);
+        $tableStr .= $result['content'] . "\r\n";
         for ($i = 1; $i < count($array) - 1; $i++) {
-            echo " &nbsp; &nbsp;" . $this->convertColumn($array[$i]) . "<br>";
+            $tableStr .= "    " . $this->convertColumn($array[$i]) . "\r\n";
         }
-        echo "}<br>";
+        $tableStr .= "        });\r\n    }\r\n";
+        $this->convertedTables[$result['name']] = $tableStr;
     }
 
     private function convertTableName($str)
     {
         $tableName = str_replace(" {", "", str_replace("Table ", "", $str));
-        return 'Schema::create("' . $tableName . '", function (Blueprint $table) {';
+        return [
+            'name' => $tableName,
+            'content' => '        Schema::create("' . $tableName . '", function (Blueprint $table) {',
+        ];
     }
 
     private function convertColumn($str)
     {
         $arr = explode(" ", $str);
         if ($arr[0] === 'id') {
-            return '$table->id();';
+            return '        $table->id();';
         }
 
         $type = $this->convertType($arr[0], $arr[1]);
 
         $attr = $this->convertAttribute(array_slice($arr, 2));
 
-        return '$table' . $type . $attr . ';';
+        return '        $table' . $type . $attr . ';';
     }
 
     private function convertType($col, $type)
@@ -77,6 +97,10 @@ class Convert
         $result = '';
         if (substr($type, 0, 4) === 'char') {
             return '->char("' . $col . '", ' . $type[5] . ')';
+        }
+
+        if (isset($this->convertedEnums[$type])) {
+            return $this->convertedEnums[$type];
         }
 
         switch ($type) {
