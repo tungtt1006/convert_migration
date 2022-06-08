@@ -1,5 +1,5 @@
 <?php
-require 'helpers.php';
+require 'convert.php';
 
 echo "<h1>Export dbdiagram to migration</h1>";
 
@@ -22,9 +22,6 @@ while(!feof($myfile)) {
 }
 fclose($myfile);
 
-echo "<br> <b>Convert =============></b>";
+echo "<br><b>Convert =============></b><br>";
 
-for ($i = 0; $i < count($matches); $i++) {
-    $helper = new Helpers;
-    $helper->convertTable($matches[$i]);
-}
+$helper = new Convert($matches);

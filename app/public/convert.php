@@ -1,23 +1,25 @@
 <?php
 
-class Helpers
+class Convert
 {
-    public $enumTable = "Hello";
+    private $convertedEnum = [];
 
-    function convertTable($array) {
-        echo "<h2>" . $this->checkTypeTable($array[0]) . "</h2>";
-        if ($this->checkTypeTable($array[0]) === 'enum') {
-            return;
+    public function __construct($tables, private $enumTable = [], private $tableTable = [])
+    {
+        foreach ($tables as $table) {
+            $type = $this->getTypeTable($table[0]);
+            if ($type === 'enum') {
+                $this->enumTable[] = $table;
+            }
+            if ($type === 'table') {
+                $this->tableTable[] = $table;
+            }
         }
-
-        echo $this->convertTableName($array[0]) . "<br>";
-        for ($i = 1; $i < count($array) - 1; $i++) {
-            echo " &nbsp; &nbsp;" . $this->convertColumn($array[$i]) . "<br>";
-        }
-        echo "}<br>";
+        $this->handleExport();
     }
 
-    function checkTypeTable($firstLine) {
+    private function getTypeTable($firstLine)
+    {
         if (substr($firstLine, 0, 4) === 'Enum') {
             return 'enum';
         }
@@ -26,13 +28,37 @@ class Helpers
         }
     }
 
-    function convertTableName($str)
+    private function handleExport()
+    {
+        foreach($this->enumTable as $enum) {
+            $this->convertEnum($enum);
+        }
+        foreach($this->tableTable as $table) {
+            $this->convertTable($table);
+        }
+    }
+
+    private function convertEnum()
+    {
+        
+    }
+
+    private function convertTable($array)
+    {
+        echo $this->convertTableName($array[0]) . "<br>";
+        for ($i = 1; $i < count($array) - 1; $i++) {
+            echo " &nbsp; &nbsp;" . $this->convertColumn($array[$i]) . "<br>";
+        }
+        echo "}<br>";
+    }
+
+    private function convertTableName($str)
     {
         $tableName = str_replace(" {", "", str_replace("Table ", "", $str));
         return 'Schema::create("' . $tableName . '", function (Blueprint $table) {';
     }
 
-    function convertColumn($str)
+    private function convertColumn($str)
     {
         $arr = explode(" ", $str);
         if ($arr[0] === 'id') {
@@ -46,7 +72,7 @@ class Helpers
         return '$table' . $type . $attr . ';';
     }
 
-    function convertType($col, $type)
+    private function convertType($col, $type)
     {
         $result = '';
         if (substr($type, 0, 4) === 'char') {
@@ -85,7 +111,7 @@ class Helpers
         return '->' . $result . '("' . $col . '")';
     }
 
-    function convertAttribute($arr)
+    private function convertAttribute($arr)
     {
         $arrAttr = $this->getArrayAttribute($arr);
         $result = '->nullable()';
@@ -115,7 +141,7 @@ class Helpers
         return $result;
     }
 
-    function getArrayAttribute($arr)
+    private function getArrayAttribute($arr)
     {
         $str = substr(implode(' ', $arr), 1, -1);
         return explode(',', $str);
