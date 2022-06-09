@@ -3,7 +3,7 @@
     "description": "Tool for fun",
     "license": "MIT",
     "homepage": "https://github.com/tungtt1006/convert_migration",
-    "keywords": ["cli","command-line", "demo"],
+    "keywords": ["cli","command-line", "dbdiagram", "migration"],
     "bin": [
       "bin/phptung"
     ]
