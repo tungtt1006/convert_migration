@@ -1,5 +1,7 @@
 <?php
-require 'convert.php';
+require 'vendor/autoload.php';
+
+use App\Convert;
 
 $path = "export-migration.txt";
 $myfile = fopen($path, "r") or die("Unable to open file!");

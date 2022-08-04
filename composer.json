@@ -1,10 +1,21 @@
 {
     "name": "tung/export-migration",
-    "description": "Tool for fun",
+    "description": "Tool for exporting db-diagram to migration file",
     "license": "MIT",
     "homepage": "https://github.com/tungtt1006/convert_migration",
     "keywords": ["cli","command-line", "dbdiagram", "migration"],
     "bin": [
-      "bin/phptung"
-    ]
+        "bin/phptung"
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Pham Xuan Tung"
+        }
+    ],
+    "require": {}
 }
