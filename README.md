@@ -15,3 +15,14 @@ composer require tung/export-migration
   ![image](https://user-images.githubusercontent.com/88578610/172752159-6f1aae2b-6fb7-4ddc-8cfa-c6b95be82d63.png)
 
 - Finally, running `./vendor/bin/phptung` and files are created in `database/migrations`.
+
+# Set up Docker for dev
+- Build image:
+
+```
+docker build -f ./docker/Dockerfile -t convert_migration .
+```
+- Run container:
+```
+docker run -v $(pwd):/var/www/html -p 8000:8000 --name convert convert_migration
+```

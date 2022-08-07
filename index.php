@@ -1,41 +1,26 @@
 <?php
 require 'vendor/autoload.php';
 
+use App\InputFile;
 use App\Convert;
 
-$path = "export-migration.txt";
-$myfile = fopen($path, "r") or die("Unable to open file!");
-$matches = [];
-$arr = [];
+try {
+    $filePath = "export-migration.txt";
+    $inputFile = new InputFile($filePath);
+    $tables = $inputFile->convertFileToTables();
 
-/**
- * Reading lines in file
- */
-while(!feof($myfile)) {
-    $buffer = trim(fgets($myfile));
-    if ($buffer != '') {
-        $arr[] = $buffer;
+    $helper = new Convert($tables);
+    $convertedTables = $helper->getTable();
+
+    foreach ($convertedTables as $key => $value) {
+        $filename = "database/migrations/" . date("Y_m_d") . "_" . time() . "_create_" . $key . "_table.php";
+        $myfile = fopen($filename, "w");
+        fwrite($myfile, intergrateFile($key, $value));
     }
-
-    if ($buffer === '}') {
-        $matches[] = $arr;
-        $arr = [];
-    }
+} catch(Exception $e) {
+    exit($e->getMessage());
 }
-fclose($myfile);
 
-$helper = new Convert($matches);
-
-/**
- * Export files
- */
-$convertedTables = $helper->getTable();
-
-foreach ($convertedTables as $key => $value) {
-    $filename = "database/migrations/" . date("Y_m_d") . "_" . time() . "_create_" . $key . "_table.php";
-    $myfile = fopen($filename, "w");
-    fwrite($myfile, intergrateFile($key, $value));
-}
 
 function intergrateFile($key, $value)
 {
