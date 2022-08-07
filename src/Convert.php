@@ -3,20 +3,24 @@ namespace App;
 
 class Convert
 {
+    private $enums = [];
+    private $tables = [];
     private $convertedEnums = [];
     private $convertedTables = [];
 
-    public function __construct($tables, private $enumTable = [], private $tableTable = [])
+    public function __construct($tables)
     {
         foreach ($tables as $table) {
             $type = $this->getTypeTable($table[0]);
+
             if ($type === 'enum') {
-                $this->enumTable[] = $table;
+                $this->enums[] = $table;
             } elseif ($type === 'table') {
-                $this->tableTable[] = $table;
+                $this->tables[] = $table;
             }
         }
-        $this->handleExport();
+
+        $this->handleConvert();
     }
 
     public function getTable()
@@ -26,20 +30,22 @@ class Convert
 
     private function getTypeTable($firstLine)
     {
-        if (substr($firstLine, 0, 4) === 'Enum') {
+        if (strtolower(substr($firstLine, 0, 4)) === 'enum') {
             return 'enum';
         }
-        if (substr($firstLine, 0, 5) === 'Table') {
+
+        if (strtolower(substr($firstLine, 0, 5)) === 'table') {
             return 'table';
         }
     }
 
-    private function handleExport()
+    private function handleConvert()
     {
-        foreach($this->enumTable as $enum) {
+        foreach($this->enums as $enum) {
             $this->convertEnum($enum);
         }
-        foreach($this->tableTable as $table) {
+
+        foreach($this->tables as $table) {
             $this->convertTable($table);
         }
     }

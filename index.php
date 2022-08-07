@@ -12,11 +12,15 @@ try {
     $helper = new Convert($tables);
     $convertedTables = $helper->getTable();
 
-    foreach ($convertedTables as $key => $value) {
-        $filename = "database/migrations/" . date("Y_m_d") . "_" . time() . "_create_" . $key . "_table.php";
-        $myfile = fopen($filename, "w");
-        fwrite($myfile, intergrateFile($key, $value));
-    }
+    echo "<pre>";
+    print_r($convertedTables);
+    echo "</pre>";
+
+    // foreach ($convertedTables as $key => $value) {
+    //     $filename = "database/migrations/" . date("Y_m_d") . "_" . time() . "_create_" . $key . "_table.php";
+    //     $myfile = fopen($filename, "w");
+    //     fwrite($myfile, intergrateFile($key, $value));
+    // }
 } catch(Exception $e) {
     exit($e->getMessage());
 }
