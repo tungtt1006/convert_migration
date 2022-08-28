@@ -12,4 +12,4 @@
 
 namespace Composer;
 
-require 'vendor/tung/export-migration/public/index.php';
+require 'vendor/tung/export-migration/index.php';

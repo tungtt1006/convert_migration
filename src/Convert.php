@@ -41,11 +41,11 @@ class Convert
 
     private function handleConvert()
     {
-        foreach($this->enums as $enum) {
+        foreach ($this->enums as $enum) {
             $this->convertEnum($enum);
         }
 
-        foreach($this->tables as $table) {
+        foreach ($this->tables as $table) {
             $this->convertTable($table);
         }
     }
@@ -67,13 +67,14 @@ class Convert
     private function convertTable($array)
     {
         $tableStr = '';
-        $result = $this->convertTableName($array[0]);
-        $tableStr .= $result['content'] . "\r\n";
+        $convertedTableName = $this->convertTableName($array[0]);
+        $tableStr .= $convertedTableName['content'] . "\r\n";
+
         for ($i = 1; $i < count($array) - 1; $i++) {
-            $tableStr .= "    " . $this->convertColumn($array[$i]) . "\r\n";
+            $tableStr .= $this->convertColumn($array[$i]);
         }
         $tableStr .= "        });\r\n    }\r\n";
-        $this->convertedTables[$result['name']] = $tableStr;
+        $this->convertedTables[$convertedTableName['name']] = $tableStr;
     }
 
     private function convertTableName($str)
@@ -87,65 +88,47 @@ class Convert
 
     private function convertColumn($str)
     {
-        $arr = explode(" ", $str);
+        $arr = explode(' ', $str);
         if ($arr[0] === 'id') {
-            return '        $table->id();';
+            return '            $table->id();' . "\r\n";
         }
 
-        $type = $this->convertType($arr[0], $arr[1]);
+        $convertedType = $this->convertType($arr[0], $arr[1]);
 
-        $attr = $this->convertAttribute(array_slice($arr, 2));
+        $convertedAttr = $this->convertAttribute(array_slice($arr, 2));
 
-        return '        $table' . $type . $attr . ';';
+        return '            $table' . $convertedType . $convertedAttr . ';' . "\r\n";
     }
 
-    private function convertType($col, $type)
+    private function convertType($colName, $type)
     {
-        $result = '';
         if (substr($type, 0, 4) === 'char') {
-            return '->char("' . $col . '", ' . $type[5] . ')';
+            return '->char("' . $colName . '", ' . $type[5] . ')';
         }
 
         if (isset($this->convertedEnums[$type])) {
             return $this->convertedEnums[$type];
         }
 
-        switch ($type) {
-            case 'bigint':
-                $result = 'bigInteger';
-                break;
-            case 'int':
-                $result = 'integer';
-                break;
-            case 'tinyint':
-                $result = 'tinyInteger';
-                break;
-            case 'string':
-                $result = 'string';
-                break;
-            case 'date':
-                $result = 'date';
-                break;
-            case 'text':
-                $result = 'text';
-                break;
-            case 'boolean':
-                $result = 'boolean';
-                break;
-            case 'json':
-                $result = 'json';
-                break;
-            default:
-                $result = 'unknown';
-                break;
-        }
-        return '->' . $result . '("' . $col . '")';
+        $typeArr = [
+            "bigint" => "bigInteger",
+            "int" => "integer",
+            "tinyint" => "tinyInteger",
+            "string" => "string",
+            "date" => "date",
+            "text" => "text",
+            "boolean" => "boolean",
+            "json" => "json",
+        ];
+
+        return '->' . ($typeArr[$type] ??  'unknow') . '("' . $colName . '")';
     }
 
     private function convertAttribute($arr)
     {
         $arrAttr = $this->getArrayAttribute($arr);
         $result = '->nullable()';
+
         foreach ($arrAttr as $item) {
             $item = trim($item);
             if ($item === 'not null'
